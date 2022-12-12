@@ -122,7 +122,7 @@ if [ -z "$XS_MEMORYFIXES" ] ; then
 fi
 # Pretty MOTD BANNER
 if [ -z "$XS_MOTD" ] ; then
-    XS_MOTD="yes"
+    XS_MOTD="no"
 fi
 # Enable Network optimising
 if [ -z "$XS_NET" ] ; then
