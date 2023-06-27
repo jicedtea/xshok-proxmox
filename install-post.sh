@@ -110,7 +110,7 @@ if [ -z "$XS_LOGROTATE" ] ; then
 fi
 # Lynis security scan tool by Cisofy
 if [ -z "$XS_LYNIS" ] ; then
-    XS_LYNIS="yes"
+    XS_LYNIS="no"
 fi
 # Increase Max FS open files
 if [ -z "$XS_MAXFS" ] ; then
@@ -257,10 +257,10 @@ fi
 
 # rebuild and add non-free to /etc/apt/sources.list
 cat <<EOF > /etc/apt/sources.list
-deb https://ftp.debian.org/debian ${OS_CODENAME} main contrib
-deb https://ftp.debian.org/debian ${OS_CODENAME}-updates main contrib
+deb https://ftp.debian.org/debian ${OS_CODENAME} main contrib non-free non-free-firmware
+deb https://ftp.debian.org/debian ${OS_CODENAME}-updates main contrib non-free non-free-firmware
 # non-free
-deb https://httpredir.debian.org/debian/ ${OS_CODENAME} main contrib non-free
+deb https://httpredir.debian.org/debian/ ${OS_CODENAME} main contrib non-free non-free-firmware
 # security updates
 deb https://security.debian.org/debian-security ${OS_CODENAME}-security main contrib
 EOF
