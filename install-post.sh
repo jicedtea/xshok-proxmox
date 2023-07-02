@@ -319,7 +319,7 @@ fi
 
 if [ "${XS_CEPH,,}" == "yes" ] ; then
     # Add the latest ceph provided by proxmox
-    echo "deb http://download.proxmox.com/debian/ceph-pacific ${OS_CODENAME} main" > /etc/apt/sources.list.d/ceph-pacific.list
+    echo "deb http://download.proxmox.com/debian/ceph-quincy ${OS_CODENAME}  no-subscription" > /etc/apt/sources.list.d/ceph-pacific.list
     ## Refresh the package lists
     apt-get update > /dev/null 2>&1
     ## Install ceph support
