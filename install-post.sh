@@ -58,7 +58,7 @@ if [ -z "$XS_BASHRC" ] ; then
 fi
 # Add the latest ceph provided by proxmox
 if [ -z "$XS_CEPH" ] ; then
-    XS_CEPH="yes"
+    XS_CEPH="no"
 fi
 # Disable portmapper / rpcbind (security)
 if [ -z "$XS_DISABLERPC" ] ; then
