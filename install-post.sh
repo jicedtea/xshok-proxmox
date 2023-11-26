@@ -264,6 +264,11 @@ deb https://httpredir.debian.org/debian/ ${OS_CODENAME} main contrib non-free no
 # security updates
 deb https://security.debian.org/debian-security ${OS_CODENAME}-security main contrib
 EOF
+# ceph
+cat <<EOF >/etc/apt/sources.list.d/ceph.list
+# deb http://download.proxmox.com/debian/ceph-quincy ${OS_CODENAME} enterprise
+deb http://download.proxmox.com/debian/ceph-quincy ${OS_CODENAME} no-subscription
+EOF
 
 # Refresh the package lists
 apt-get update > /dev/null 2>&1
@@ -318,11 +323,6 @@ if [ "${XS_UTILS,,}" == "yes" ] ; then
 fi
 
 if [ "${XS_CEPH,,}" == "yes" ] ; then
-    # Add the latest ceph provided by proxmox
-    cat <<EOF >/etc/apt/sources.list.d/ceph.list
-    # deb http://download.proxmox.com/debian/ceph-quincy bookworm enterprise
-    deb http://download.proxmox.com/debian/ceph-quincy bookworm no-subscription
-    EOF
     ## Refresh the package lists
     apt-get update > /dev/null 2>&1
     ## Install ceph support
