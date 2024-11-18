@@ -339,17 +339,17 @@ if [ "${XS_LYNIS,,}" == "yes" ] ; then
     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install lynis
 fi
 
-if [ "${XS_OPENVSWITCH,,}" == "yes" ] && [ "${XS_IFUPDOWN2}" == "no" ] ; then
-    ## Install openvswitch for a virtual internal network
-    /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install ifenslave ifupdown
-    /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' remove ifupdown2
-    /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install openvswitch-switch
-else
-    ## Install ifupdown2 for a virtual internal network allows rebootless networking changes (not compatible with openvswitch-switch)
-    /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' purge openvswitch-switch
-    /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install ifupdown2
-    /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' remove ifenslave ifupdown
-fi
+# if [ "${XS_OPENVSWITCH,,}" == "yes" ] && [ "${XS_IFUPDOWN2}" == "no" ] ; then
+#     ## Install openvswitch for a virtual internal network
+#     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install ifenslave ifupdown
+#     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' remove ifupdown2
+#     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install openvswitch-switch
+# else
+#     ## Install ifupdown2 for a virtual internal network allows rebootless networking changes (not compatible with openvswitch-switch)
+#     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' purge openvswitch-switch
+#     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install ifupdown2
+#     /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' remove ifenslave ifupdown
+# fi
 
 if [ "${XS_ZFSAUTOSNAPSHOT,,}" == "yes" ] ; then
     ## Install zfs-auto-snapshot
@@ -469,39 +469,39 @@ if [ "${XS_DISABLERPC,,}" == "yes" ] ; then
     systemctl stop rpcbind
 fi
 
-if [ "${XS_TIMEZONE}" == "" ] ; then
-    ## Set Timezone, empty = set automatically by ip
-    this_ip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-    timezone="$(curl "https://ipapi.co/${this_ip}/timezone")"
-    if [ "$timezone" != "" ] ; then
-        echo "Found $timezone for ${this_ip}"
-        timedatectl set-timezone "$timezone"
-    else
-        echo "WARNING: Timezone not found for ${this_ip}, set to UTC"
-        timedatectl set-timezone UTC
-    fi
-else
-    ## Set Timezone to XS_TIMEZONE
-    timedatectl set-timezone "$XS_TIMEZONE"
-fi
+# if [ "${XS_TIMEZONE}" == "" ] ; then
+#     ## Set Timezone, empty = set automatically by ip
+#     this_ip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+#     timezone="$(curl "https://ipapi.co/${this_ip}/timezone")"
+#     if [ "$timezone" != "" ] ; then
+#         echo "Found $timezone for ${this_ip}"
+#         timedatectl set-timezone "$timezone"
+#     else
+#         echo "WARNING: Timezone not found for ${this_ip}, set to UTC"
+#         timedatectl set-timezone UTC
+#     fi
+# else
+#     ## Set Timezone to XS_TIMEZONE
+#     timedatectl set-timezone "$XS_TIMEZONE"
+# fi
 
 if [ "${XS_TIMESYNC,,}" == "yes" ] ; then
     timedatectl set-ntp true
 fi
 
-if [ "${XS_GUESTAGENT,,}" == "yes" ] ; then
-    ## Detect if is running in a virtual machine and install the relavant guest agent
-    if [ "$(dmidecode -s system-manufacturer | xargs)" == "QEMU" ] || [ "$(systemd-detect-virt | xargs)" == "kvm" ] ; then
-      echo "QEMU Detected, installing guest agent"
-      /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install qemu-guest-agent
-    elif [ "$(systemd-detect-virt | xargs)" == "vmware" ] ; then
-      echo "VMware Detected, installing vm-tools"
-      /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install open-vm-tools
-    elif [ "$(systemd-detect-virt | xargs)" == "oracle" ] ; then
-      echo "Virtualbox Detected, installing guest-utils"
-      /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install virtualbox-guest-utils
-    fi
-fi
+# if [ "${XS_GUESTAGENT,,}" == "yes" ] ; then
+#     ## Detect if is running in a virtual machine and install the relavant guest agent
+#     if [ "$(dmidecode -s system-manufacturer | xargs)" == "QEMU" ] || [ "$(systemd-detect-virt | xargs)" == "kvm" ] ; then
+#       echo "QEMU Detected, installing guest agent"
+#       /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install qemu-guest-agent
+#     elif [ "$(systemd-detect-virt | xargs)" == "vmware" ] ; then
+#       echo "VMware Detected, installing vm-tools"
+#       /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install open-vm-tools
+#     elif [ "$(systemd-detect-virt | xargs)" == "oracle" ] ; then
+#       echo "Virtualbox Detected, installing guest-utils"
+#       /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::='--force-confdef' install virtualbox-guest-utils
+#     fi
+# fi
 
 if [ "${XS_PIGZ,,}" == "yes" ] ; then
     ## Set pigz to replace gzip, 2x faster gzip compression
@@ -520,15 +520,15 @@ EOF
     chmod +x /bin/gzip
 fi
 
-if [ "${XS_OVHRTM,,}" == "yes" ] ; then
-    ## Detect if this is an OVH server by getting the global IP and checking the ASN, then install OVH RTM (real time monitoring)"
-    if [ "$(whois -h v4.whois.cymru.com " -t $(curl ipinfo.io/ip 2> /dev/null)" | tail -n 1 | cut -d'|' -f3 | grep -i "ovh")" != "" ] ; then
-      echo "Deteted OVH Server, installing OVH RTM (real time monitoring)"
-      # http://help.ovh.co.uk/RealTimeMonitoring
-      # https://docs.ovh.com/gb/en/dedicated/install-rtm/
-      wget -qO - https://last-public-ovh-infra-yak.snap.mirrors.ovh.net/yak/archives/apply.sh | OVH_PUPPET_MANIFEST=distribyak/catalog/master/puppet/manifests/common/rtmv2.pp bash
-    fi
-fi
+# if [ "${XS_OVHRTM,,}" == "yes" ] ; then
+#     ## Detect if this is an OVH server by getting the global IP and checking the ASN, then install OVH RTM (real time monitoring)"
+#     if [ "$(whois -h v4.whois.cymru.com " -t $(curl ipinfo.io/ip 2> /dev/null)" | tail -n 1 | cut -d'|' -f3 | grep -i "ovh")" != "" ] ; then
+#       echo "Deteted OVH Server, installing OVH RTM (real time monitoring)"
+#       # http://help.ovh.co.uk/RealTimeMonitoring
+#       # https://docs.ovh.com/gb/en/dedicated/install-rtm/
+#       wget -qO - https://last-public-ovh-infra-yak.snap.mirrors.ovh.net/yak/archives/apply.sh | OVH_PUPPET_MANIFEST=distribyak/catalog/master/puppet/manifests/common/rtmv2.pp bash
+#     fi
+# fi
 
 if [ "${XS_FAIL2BAN,,}" == "yes" ] ; then
     ## Protect the web interface with fail2ban
@@ -580,17 +580,17 @@ EOF
     echo "DPkg::Post-Invoke { \"dpkg -V proxmox-widget-toolkit | grep -q '/proxmoxlib\.js$'; if [ \$? -eq 1 ]; then { echo 'Removing subscription nag from UI...'; sed -i '/data.status/{s/\!//;s/Active/NoMoreNagging/}' /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js; }; fi\"; };" > /etc/apt/apt.conf.d/xs-pve-no-nag && apt --reinstall install proxmox-widget-toolkit
 fi
 
-if [ "${XS_MOTD,,}" == "yes" ] ; then
-## Pretty MOTD BANNER
-  if ! grep -q https "/etc/motd" ; then
-    cat << 'EOF' > /etc/motd.new
-	   This system is optimised by: eXtremeSHOK.com
-EOF
+# if [ "${XS_MOTD,,}" == "yes" ] ; then
+# ## Pretty MOTD BANNER
+#   if ! grep -q https "/etc/motd" ; then
+#     cat << 'EOF' > /etc/motd.new
+# 	   This system is optimised by: eXtremeSHOK.com
+# EOF
 
-    cat /etc/motd >> /etc/motd.new
-    mv /etc/motd.new /etc/motd
-  fi
-fi
+#     cat /etc/motd >> /etc/motd.new
+#     mv /etc/motd.new /etc/motd
+#   fi
+# fi
 
 if [ "${XS_KERNELPANIC,,}" == "yes" ] ; then
     # Enable restart on kernel panic
@@ -908,17 +908,17 @@ vfio_pci
 vfio_virqfd
 
 EOF
-    cat <<EOF >> /etc/modprobe.d/blacklist.conf
-# eXtremeSHOK.com
-blacklist nouveau
-blacklist lbm-nouveau
-options nouveau modeset=0
-blacklist amdgpu
-blacklist radeon
-blacklist nvidia
-blacklist nvidiafb
+#     cat <<EOF >> /etc/modprobe.d/blacklist.conf
+# # eXtremeSHOK.com
+# blacklist nouveau
+# blacklist lbm-nouveau
+# options nouveau modeset=0
+# blacklist amdgpu
+# blacklist radeon
+# blacklist nvidia
+# blacklist nvidiafb
 
-EOF
+# EOF
 
 fi
 
